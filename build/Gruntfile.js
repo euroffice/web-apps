@@ -220,6 +220,9 @@ module.exports = function(grunt) {
             defaultConfig = configFile;
             packageFile = require('./' + defaultConfig);
 
+            packageFile.version = (process.env['PRODUCT_VERSION'] || packageFile.version);
+
+
             if (packageFile) {
                 grunt.log.ok(appName + ' config loaded successfully'.green);
 
