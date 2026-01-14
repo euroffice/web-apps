@@ -135,15 +135,16 @@ module.exports = function(grunt) {
     addons.forEach((element,index,self) => self[index] = path.join('../..', element, '/build'));
     addons = addons.filter(element => grunt.file.isDir(element));
 
-    // Theme support - load theme files from themes directory
+    // Theme support - load theme.less from themes directory
     const theme = process.env.THEME || 'default';
     const themePath = path.join('../apps/common/main/resources/less/themes', theme);
+    const themeEntry = path.join(themePath, 'theme.less');
     let themeFiles = [];
-    if (grunt.file.isDir(themePath)) {
-        themeFiles = grunt.file.expand({ cwd: '.' }, path.join(themePath, '*.less'));
-        grunt.log.writeln('Theme: ' + theme.green + ' (' + themeFiles.length + ' files)');
+    if (grunt.file.exists(themeEntry)) {
+        themeFiles = [themeEntry];
+        grunt.log.writeln('Theme: ' + theme.green);
     } else if (theme !== 'default') {
-        grunt.log.warn('Theme directory not found: ' + themePath);
+        grunt.log.warn('Theme not found: ' + themeEntry);
     }
 
     // Helper to append theme files to a LESS source array
@@ -913,8 +914,8 @@ module.exports = function(grunt) {
     grunt.registerTask('deploy-testspreadsheeteditor', ['init-build-testspreadsheeteditor', 'deploy-app']);
 
     // Build LESS only for all editors
+    // Note: common styles are imported into each editor's app.less, no separate common build needed
     grunt.registerTask('less-all', [
-        'init-build-common', 'main-app-init', 'less',
         'init-build-documenteditor', 'main-app-init', 'less',
         'init-build-spreadsheeteditor', 'main-app-init', 'less',
         'init-build-presentationeditor', 'main-app-init', 'less',
