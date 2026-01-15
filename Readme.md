@@ -74,19 +74,27 @@ We want to make upstream updates as painless as possible. From the perspective o
 
 ### Building using a theme
 
-You will probably want to do this. You can do this one of two ways:
+You can do this one of two ways:
 
 #### Set ENV var
 
 ```shell
-THEME=[your theme]
+THEME=[your theme] grunt [optional grunt command]
 ```
 eg
 ```shell
-THEME=nextcloud
+THEME=nextcloud grunt less-all
 ```
+> If you do this, you need to restart the docker eo, as the css files are cache busted
+> `docker compose exec eo bash`
 
+#### Setting up a theme
 
+Look at `apps/common/main/resources/less/themes/nextcloud` as an example.
+
+The idea is to use variables set in the `theme` file as much as possible, and use the overrides feature if it is not possible to just use a variable. By using variables, we don't introduce extra CSS in the final output.
+
+The `overrides` directory should match the structure of the existing app. It is only when it is not possible to accomplish the styling using variables.
 
 ## License
 
