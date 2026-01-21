@@ -111,6 +111,7 @@ let svg_icons = window.uitheme.svg_icons || [
 window.Common = {
     Utils: {
         injectSvgIcons: function (svg_icons_array, force) {
+            return; // DISABLED: testing direct SVG file references
             if ( window.isIEBrowser === true ) return;
 
             window.svgiconsrunonce;

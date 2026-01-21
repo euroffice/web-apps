@@ -351,6 +351,9 @@ module.exports = function(grunt) {
                 options: {...svgmin_opts},
                 dist: {
                     files: packageFile['apps-common'].svgicons.common
+                },
+                toolbar: {
+                    files: packageFile['apps-common'].svgicons['toolbar-icons-flat']
                 }
             },
             inline: {

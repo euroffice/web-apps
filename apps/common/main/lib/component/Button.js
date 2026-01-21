@@ -180,13 +180,28 @@ define([
         return _out_array;
     };
 
+    var svgIconsPath = '../../common/main/resources/img/icons/';
+
+    // OLD sprite-based approach (commented out):
+    // var templateBtnIcon =
+    //         '<% if ( iconImg ) { %>' +
+    //             '<img src="<%= iconImg %>">' +
+    //         '<% } else { %>' +
+    //             '<% if (/svgicon/.test(iconCls)) {' +
+    //                 'print(\'<svg class=\"icon uni-scale\"><use class=\"zoom-int\" xlink:href=\"#\' + /svgicon\\s(\\S+)/.exec(iconCls)[1] + \'\"></use></svg>\');' +
+    //         '} else ' +
+    //                 'print(\'<i class=\"icon \' + iconCls + \'\" dummy-attr>&nbsp;</i>\'); %>' +
+    //         '<% } %>';
+
+    // NEW direct SVG file approach:
     var templateBtnIcon =
             '<% if ( iconImg ) { %>' +
                 '<img src="<%= iconImg %>">' +
             '<% } else { %>' +
-                '<% if (/svgicon/.test(iconCls)) {' +
-                    'print(\'<svg class=\"icon uni-scale\"><use class=\"zoom-int\" xlink:href=\"#\' + /svgicon\\s(\\S+)/.exec(iconCls)[1] + \'\"></use></svg>\');' +
-            '} else ' +
+                '<% var iconMatch = /btn-[^\\s]+/.exec(iconCls); ' +
+                'if (iconMatch) {' +
+                    'print(\'<img src=\"' + svgIconsPath + '\' + iconMatch[0] + \'.svg\" class=\"icon\">\');' +
+                '} else ' +
                     'print(\'<i class=\"icon \' + iconCls + \'\">&nbsp;</i>\'); %>' +
             '<% } %>';
 
@@ -285,10 +300,18 @@ define([
         template: _.template([
             '<% var applyicon = function() { %>',
                 '<% if (iconImg) { print(\'<img src=\"\' + iconImg + \'\">\'); } else { %>',
-                // '<% if (iconCls != "") { print(\'<i class=\"icon \' + iconCls + \'\">&nbsp;</i>\'); }} %>',
+                // OLD sprite-based approach (commented out):
+                // '<% if (iconCls != "") { ' +
+                //     ' if (/svgicon/.test(iconCls)) {' +
+                //         'print(\'<svg class=\"icon uni-scale\"><use class=\"zoom-int\" xlink:href=\"#\' + /svgicon\\s(\\S+)/.exec(iconCls)[1] + \'\"></use></svg>\');' +
+                //     '} else ' +
+                //         'print(\'<i class=\"icon \' + iconCls + \'\">&nbsp;</i>\'); ' +
+                // '}} %>',
+                // NEW direct SVG file approach:
                 '<% if (iconCls != "") { ' +
-                    ' if (/svgicon/.test(iconCls)) {' +
-                        'print(\'<svg class=\"icon uni-scale\"><use class=\"zoom-int\" xlink:href=\"#\' + /svgicon\\s(\\S+)/.exec(iconCls)[1] + \'\"></use></svg>\');' +
+                    'var iconMatch = /btn-[^\\s]+/.exec(iconCls); ' +
+                    'if (iconMatch) {' +
+                        'print(\'<img src=\"' + svgIconsPath + '\' + iconMatch[0] + \'.svg\" class=\"icon\">\');' +
                     '} else ' +
                         'print(\'<i class=\"icon \' + iconCls + \'\">&nbsp;</i>\'); ' +
                 '}} %>',
@@ -1015,7 +1038,7 @@ define([
                     }
                 } else {
                     if (!me.$el.find('i.icon')) {
-                        const png_icon = '<i class="icon %cls">&nbsp;</i>'.replace('%cls', me.iconCls);
+                        const png_icon = '<i class="icon %cls" dummy-attr>&nbsp;</i>'.replace('%cls', me.iconCls);
                         me.$el.find('svg.icon').after(png_icon);
                     }
                 }
