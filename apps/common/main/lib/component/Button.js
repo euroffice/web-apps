@@ -180,27 +180,16 @@ define([
         return _out_array;
     };
 
-    var svgIconsPath = '../../common/main/resources/img/icons/';
+    var svgSpritePath = '../../common/main/resources/img/toolbar/icons.svg';
 
-    // OLD sprite-based approach (commented out):
-    // var templateBtnIcon =
-    //         '<% if ( iconImg ) { %>' +
-    //             '<img src="<%= iconImg %>">' +
-    //         '<% } else { %>' +
-    //             '<% if (/svgicon/.test(iconCls)) {' +
-    //                 'print(\'<svg class=\"icon uni-scale\"><use class=\"zoom-int\" xlink:href=\"#\' + /svgicon\\s(\\S+)/.exec(iconCls)[1] + \'\"></use></svg>\');' +
-    //         '} else ' +
-    //                 'print(\'<i class=\"icon \' + iconCls + \'\" dummy-attr>&nbsp;</i>\'); %>' +
-    //         '<% } %>';
-
-    // NEW direct SVG file approach:
+    // SVG sprite approach - uses <svg><use href="#id"> for dark mode support
     var templateBtnIcon =
             '<% if ( iconImg ) { %>' +
                 '<img src="<%= iconImg %>">' +
             '<% } else { %>' +
                 '<% var iconMatch = /btn-[^\\s]+/.exec(iconCls); ' +
                 'if (iconMatch) {' +
-                    'print(\'<img src=\"' + svgIconsPath + '\' + iconMatch[0] + \'.svg\" class=\"icon\">\');' +
+                    'print(\'<svg class=\"icon\"><use href=\"' + svgSpritePath + '#\' + iconMatch[0] + \'\"></use></svg>\');' +
                 '} else ' +
                     'print(\'<i class=\"icon \' + iconCls + \'\">&nbsp;</i>\'); %>' +
             '<% } %>';
@@ -300,18 +289,11 @@ define([
         template: _.template([
             '<% var applyicon = function() { %>',
                 '<% if (iconImg) { print(\'<img src=\"\' + iconImg + \'\">\'); } else { %>',
-                // OLD sprite-based approach (commented out):
-                // '<% if (iconCls != "") { ' +
-                //     ' if (/svgicon/.test(iconCls)) {' +
-                //         'print(\'<svg class=\"icon uni-scale\"><use class=\"zoom-int\" xlink:href=\"#\' + /svgicon\\s(\\S+)/.exec(iconCls)[1] + \'\"></use></svg>\');' +
-                //     '} else ' +
-                //         'print(\'<i class=\"icon \' + iconCls + \'\">&nbsp;</i>\'); ' +
-                // '}} %>',
-                // NEW direct SVG file approach:
+                // SVG sprite approach - uses <svg><use href="#id"> for dark mode support
                 '<% if (iconCls != "") { ' +
                     'var iconMatch = /btn-[^\\s]+/.exec(iconCls); ' +
                     'if (iconMatch) {' +
-                        'print(\'<img src=\"' + svgIconsPath + '\' + iconMatch[0] + \'.svg\" class=\"icon\">\');' +
+                        'print(\'<svg class=\"icon\"><use href=\"' + svgSpritePath + '#\' + iconMatch[0] + \'\"></use></svg>\');' +
                     '} else ' +
                         'print(\'<i class=\"icon \' + iconCls + \'\">&nbsp;</i>\'); ' +
                 '}} %>',
@@ -792,7 +774,7 @@ define([
             this.iconCls = cls;
             if (/svgicon/.test(this.iconCls)) {
                 var icon = /svgicon\s(\S+)/.exec(this.iconCls);
-                svgIcon.attr('xlink:href', icon && icon.length > 1 ? '#' + icon[1] : '');
+                svgIcon.attr('href', icon && icon.length > 1 ? '#' + icon[1] : '');
             } else {
                 if (svgIcon.length) {
                     var icon = /btn-[^\s]+/.exec(this.iconCls);
