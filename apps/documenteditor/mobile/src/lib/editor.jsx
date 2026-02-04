@@ -155,26 +155,20 @@ export const ContextMenu = {
         const canCopy = api.can_CopyCut();
         const isAllowedEditing = !isProtected || typeProtection === Asc.c_oAscEDocProtect.TrackedChanges;
 
-        let isText = false,
-            isObject = false,
-            isLink = false,
-            locked = false;
+        const contextTypeHandlers = {
+            [Asc.c_oAscTypeSelectElement.Header]: (val, state) => { state.locked = val.get_Locked(); },
+            [Asc.c_oAscTypeSelectElement.Paragraph]: (val, state) => { state.locked = val.get_Locked(); state.isText = true; },
+            [Asc.c_oAscTypeSelectElement.Image]: (val, state) => { state.locked = val.get_Locked(); state.isObject = true; },
+            [Asc.c_oAscTypeSelectElement.Table]: (val, state) => { state.locked = val.get_Locked(); state.isObject = true; },
+            [Asc.c_oAscTypeSelectElement.Hyperlink]: (val, state) => { state.isLink = true; },
+        };
 
+        const state = { isText: false, isObject: false, isLink: false, locked: false };
         stack.forEach(item => {
-            const objectType = item.get_ObjectType(),
-                objectValue = item.get_ObjectValue();
-            if (objectType === Asc.c_oAscTypeSelectElement.Header) {
-                locked = objectValue.get_Locked();
-            } else if (objectType === Asc.c_oAscTypeSelectElement.Paragraph) {
-                locked = objectValue.get_Locked();
-                isText = true;
-            } else if (objectType === Asc.c_oAscTypeSelectElement.Image || objectType === Asc.c_oAscTypeSelectElement.Table) {
-                locked = objectValue.get_Locked();
-                isObject = true;
-            } else if (objectType === Asc.c_oAscTypeSelectElement.Hyperlink) {
-                isLink = true;
-            }
+            const handler = contextTypeHandlers[item.get_ObjectType()];
+            if (handler) handler(item.get_ObjectValue(), state);
         });
+        const { isText, isObject, isLink, locked } = state;
 
         let itemsIcon = [],
             itemsText = [];
