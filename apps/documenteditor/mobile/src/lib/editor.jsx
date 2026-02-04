@@ -93,34 +93,31 @@ export const initFocusObjects = (storeFocusObjects) => {
     });
 
     // Editor-specific: filterFocusObjects with document-specific logic
+    // To add a new type, add a handler: [Asc.c_oAscTypeSelectElement.X]: () => ['name']
+    const typeHandlers = {
+        [Asc.c_oAscTypeSelectElement.Paragraph]: () => ['text', 'paragraph'],
+        [Asc.c_oAscTypeSelectElement.Table]: () => ['table'],
+        [Asc.c_oAscTypeSelectElement.Hyperlink]: () => ['hyperlink'],
+        [Asc.c_oAscTypeSelectElement.Header]: () => ['header'],
+        [Asc.c_oAscTypeSelectElement.Image]: (obj, arr) => {
+            const val = obj.get_ObjectValue();
+            if (val.get_ChartProperties()) {
+                const idx = arr.indexOf('shape');
+                if (idx >= 0) arr.splice(idx, 1);
+                return ['chart'];
+            }
+            if (val.get_ShapeProperties() && !arr.includes('chart')) return ['shape'];
+            return ['image'];
+        },
+    };
+
     storeFocusObjects.intf.filterFocusObjects = () => {
         const arr = [];
-        for (let object of storeFocusObjects._focusObjects) {
-            let type = object.get_ObjectType();
-            if (Asc.c_oAscTypeSelectElement.Paragraph === type) {
-                arr.push('text', 'paragraph');
-            } else if (Asc.c_oAscTypeSelectElement.Table === type) {
-                arr.push('table');
-            } else if (Asc.c_oAscTypeSelectElement.Image === type) {
-                if (object.get_ObjectValue().get_ChartProperties()) {
-                    let idx = arr.indexOf('shape');
-                    if (idx < 0) {
-                        arr.push('chart');
-                    } else {
-                        arr.splice(idx, 1, 'chart');
-                    }
-                } else if (object.get_ObjectValue().get_ShapeProperties() && !arr.includes('chart')) {
-                    arr.push('shape');
-                } else {
-                    arr.push('image');
-                }
-            } else if (Asc.c_oAscTypeSelectElement.Hyperlink === type) {
-                arr.push('hyperlink');
-            } else if (Asc.c_oAscTypeSelectElement.Header === type) {
-                arr.push('header');
-            }
+        for (const obj of storeFocusObjects._focusObjects) {
+            const handler = typeHandlers[obj.get_ObjectType()];
+            if (handler) arr.push(...handler(obj, arr));
         }
-        return arr.filter((value, index, self) => self.indexOf(value) === index);
+        return [...new Set(arr)];
     };
 };
 
