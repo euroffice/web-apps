@@ -1,8 +1,12 @@
 import React, { Fragment } from 'react';
 import { Link } from 'framework7-react';
 import { Device } from '../../../../common/mobile/utils/device';
-import {CommentsController, ViewCommentsController} from '../../../../common/mobile/lib/controller/collaboration/Comments';
-import SvgIcon from '@common/lib/component/SvgIcon';
+import { CommentsController, ViewCommentsController } from '../../../../common/mobile/lib/controller/collaboration/Comments';
+import {
+    PlatformIcon,
+    buildFocusObjectGetters,
+    initThemeColors as commonInitThemeColors
+} from '../../../../common/mobile/lib/editor';
 import IconEditSettingsIos from '@common-ios-icons/icon-edit-settings.svg?ios';
 import IconEditSettingsAndroid from '@common-android-icons/icon-edit-settings.svg';
 import IconAddOtherIos from '@common-ios-icons/icon-add-other.svg?ios';
@@ -12,49 +16,36 @@ import IconUndoAndroid from '@common-android-icons/icon-undo.svg';
 import IconRedoIos from '@common-ios-icons/icon-redo.svg?ios';
 import IconRedoAndroid from '@common-android-icons/icon-redo.svg';
 
-export const getToolbarOptions = ({ disabledEdit, disabledAdd, onEditClick, onAddClick }) => {
-    return (
-        <Fragment>
-            <Link iconOnly className={disabledEdit ? 'disabled' : ''} id="btn-edit" href={false} onClick={onEditClick}>
-                {Device.ios ?
-                    <SvgIcon slot="media" symbolId={IconEditSettingsIos.id} className={'icon icon-svg'} /> :
-                    <SvgIcon slot="media" symbolId={IconEditSettingsAndroid.id} className={'icon icon-svg'} />
-                }
-            </Link>
-            <Link iconOnly className={disabledAdd ? 'disabled' : ''} id="btn-add" href={false} onClick={onAddClick}>
-                {Device.ios ?
-                    <SvgIcon slot="media" symbolId={IconAddOtherIos.id} className={'icon icon-svg'} /> :
-                    <SvgIcon slot="media" symbolId={IconAddOtherAndroid.id} className={'icon icon-svg'} />
-                }
-            </Link>
-        </Fragment>
-    );
+const icons = {
+    edit: { ios: IconEditSettingsIos, android: IconEditSettingsAndroid },
+    add: { ios: IconAddOtherIos, android: IconAddOtherAndroid },
+    undo: { ios: IconUndoIos, android: IconUndoAndroid },
+    redo: { ios: IconRedoIos, android: IconRedoAndroid },
 };
 
-export const getUndoRedo = ({ disabledUndo, disabledRedo, onUndoClick, onRedoClick }) => {
-    return (
-        <Fragment>
-            <Link iconOnly className={disabledUndo ? 'disabled' : ''} onClick={onUndoClick}>
-                {Device.ios ?
-                    <SvgIcon slot="media" symbolId={IconUndoIos.id} className={'icon icon-svg'} /> :
-                    <SvgIcon slot="media" symbolId={IconUndoAndroid.id} className={'icon icon-svg'} />
-                }
-            </Link>
-            <Link iconOnly className={disabledRedo ? 'disabled' : ''} onClick={onRedoClick}>
-                {Device.ios ?
-                    <SvgIcon slot="media" symbolId={IconRedoIos.id} className={'icon icon-svg'} /> :
-                    <SvgIcon slot="media" symbolId={IconRedoAndroid.id} className={'icon icon-svg'} />
-                }
-            </Link>
-        </Fragment>
-    );
-};
+export const getToolbarOptions = ({ disabledEdit, disabledAdd, onEditClick, onAddClick }) => (
+    <Fragment>
+        <Link iconOnly className={disabledEdit ? 'disabled' : ''} id="btn-edit" href={false} onClick={onEditClick}>
+            <PlatformIcon {...icons.edit} />
+        </Link>
+        <Link iconOnly className={disabledAdd ? 'disabled' : ''} id="btn-add" href={false} onClick={onAddClick}>
+            <PlatformIcon {...icons.add} />
+        </Link>
+    </Fragment>
+);
 
-export const initThemeColors = () => {
-    Common.EditorApi.get().asc_registerCallback('asc_onSendThemeColors', (colors, standartColors) => {
-        Common.Utils.ThemeColor.setColors(colors, standartColors);
-    });
-};
+export const getUndoRedo = ({ disabledUndo, disabledRedo, onUndoClick, onRedoClick }) => (
+    <Fragment>
+        <Link iconOnly className={disabledUndo ? 'disabled' : ''} onClick={onUndoClick}>
+            <PlatformIcon {...icons.undo} />
+        </Link>
+        <Link iconOnly className={disabledRedo ? 'disabled' : ''} onClick={onRedoClick}>
+            <PlatformIcon {...icons.redo} />
+        </Link>
+    </Fragment>
+);
+
+export const initThemeColors = commonInitThemeColors;
 
 export const initFonts = (storeTextSettings) => {
     const api = Common.EditorApi.get();
@@ -108,8 +99,21 @@ export const initFocusObjects = (storeFocusObjects) => {
         storeFocusObjects.resetFocusObjects(objects);
     });
 
-    storeFocusObjects.intf = {};
+    // Build standard getters using the common factory
+    buildFocusObjectGetters(storeFocusObjects, {
+        getSlideObject: { type: Asc.c_oAscTypeSelectElement.Slide },
+        getParagraphObject: { type: Asc.c_oAscTypeSelectElement.Paragraph },
+        getShapeObject: { type: Asc.c_oAscTypeSelectElement.Shape },
+        getTableObject: { type: Asc.c_oAscTypeSelectElement.Table },
+        getChartObject: { type: Asc.c_oAscTypeSelectElement.Chart },
+        getLinkObject: { type: Asc.c_oAscTypeSelectElement.Hyperlink },
+        getImageObject: {
+            type: Asc.c_oAscTypeSelectElement.Image,
+            check: obj => obj.get_ObjectValue()
+        },
+    });
 
+    // Presentation-specific: filterFocusObjects with slide-specific logic
     storeFocusObjects.intf.filterFocusObjects = () => {
         const arr = [];
         let hasUnlockedParagraph = false;
@@ -169,91 +173,6 @@ export const initFocusObjects = (storeFocusObjects) => {
 
         return result;
     };
-
-    storeFocusObjects.intf.getSlideObject = () => {
-        const matches = [];
-        for (let object of storeFocusObjects._focusObjects) {
-            if (object.get_ObjectType() === Asc.c_oAscTypeSelectElement.Slide) {
-                matches.push(object);
-            }
-        }
-        if (matches.length > 0) {
-            return matches[matches.length - 1].get_ObjectValue();
-        }
-    };
-
-    storeFocusObjects.intf.getParagraphObject = () => {
-        const matches = [];
-        for (let object of storeFocusObjects._focusObjects) {
-            if (object.get_ObjectType() === Asc.c_oAscTypeSelectElement.Paragraph) {
-                matches.push(object);
-            }
-        }
-        if (matches.length > 0) {
-            return matches[matches.length - 1].get_ObjectValue();
-        }
-    };
-
-    storeFocusObjects.intf.getShapeObject = () => {
-        const matches = [];
-        for (let object of storeFocusObjects._focusObjects) {
-            if (object.get_ObjectType() === Asc.c_oAscTypeSelectElement.Shape) {
-                matches.push(object);
-            }
-        }
-        if (matches.length > 0) {
-            return matches[matches.length - 1].get_ObjectValue();
-        }
-    };
-
-    storeFocusObjects.intf.getImageObject = () => {
-        const matches = [];
-        for (let object of storeFocusObjects._focusObjects) {
-            if (object.get_ObjectType() === Asc.c_oAscTypeSelectElement.Image &&
-                object.get_ObjectValue()) {
-                matches.push(object);
-            }
-        }
-        if (matches.length > 0) {
-            return matches[matches.length - 1].get_ObjectValue();
-        }
-    };
-
-    storeFocusObjects.intf.getTableObject = () => {
-        const matches = [];
-        for (let object of storeFocusObjects._focusObjects) {
-            if (object.get_ObjectType() === Asc.c_oAscTypeSelectElement.Table) {
-                matches.push(object);
-            }
-        }
-        if (matches.length > 0) {
-            return matches[matches.length - 1].get_ObjectValue();
-        }
-    };
-
-    storeFocusObjects.intf.getChartObject = () => {
-        const matches = [];
-        for (let object of storeFocusObjects._focusObjects) {
-            if (object.get_ObjectType() === Asc.c_oAscTypeSelectElement.Chart) {
-                matches.push(object);
-            }
-        }
-        if (matches.length > 0) {
-            return matches[matches.length - 1].get_ObjectValue();
-        }
-    };
-
-    storeFocusObjects.intf.getLinkObject = () => {
-        const matches = [];
-        for (let object of storeFocusObjects._focusObjects) {
-            if (object.get_ObjectType() === Asc.c_oAscTypeSelectElement.Hyperlink) {
-                matches.push(object);
-            }
-        }
-        if (matches.length > 0) {
-            return matches[matches.length - 1].get_ObjectValue();
-        }
-    };
 };
 
 export const initTableTemplates = (storeTableSettings) => {
@@ -273,14 +192,12 @@ export const updateChartStyles = (storeChartSettings, storeFocusObjects) => {
     });
 };
 
-export const getEditCommentControllers = () => {
-    return (
-        <Fragment>
-            <CommentsController />
-            <ViewCommentsController />
-        </Fragment>
-    );
-};
+export const getEditCommentControllers = () => (
+    <Fragment>
+        <CommentsController />
+        <ViewCommentsController />
+    </Fragment>
+);
 
 export const ContextMenu = {
     mapMenuItems(controller) {

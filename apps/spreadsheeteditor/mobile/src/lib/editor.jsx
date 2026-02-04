@@ -1,7 +1,11 @@
 import React, { Fragment } from 'react';
 import { Link } from 'framework7-react';
 import { Device } from '../../../../common/mobile/utils/device';
-import SvgIcon from '@common/lib/component/SvgIcon';
+import {
+    PlatformIcon,
+    buildFocusObjectGetters,
+    initThemeColors as commonInitThemeColors
+} from '../../../../common/mobile/lib/editor';
 import IconEditSettingsIos from '@common-ios-icons/icon-edit-settings.svg?ios';
 import IconEditSettingsAndroid from '@common-android-icons/icon-edit-settings.svg';
 import IconAddOtherIos from '@common-ios-icons/icon-add-other.svg?ios';
@@ -11,50 +15,37 @@ import IconUndoAndroid from '@common-android-icons/icon-undo.svg';
 import IconRedoIos from '@common-ios-icons/icon-redo.svg?ios';
 import IconRedoAndroid from '@common-android-icons/icon-redo.svg';
 
-export const toolbarOptions = {
-    getUndoRedo: ({ disabledUndo, disabledRedo, onUndoClick, onRedoClick }) => {
-        return (
-            <Fragment>
-                <Link iconOnly className={disabledUndo ? 'disabled' : ''} onClick={onUndoClick}>
-                    {Device.ios ?
-                        <SvgIcon slot="media" symbolId={IconUndoIos.id} className={'icon icon-svg'} /> :
-                        <SvgIcon slot="media" symbolId={IconUndoAndroid.id} className={'icon icon-svg'} />
-                    }
-                </Link>
-                <Link iconOnly className={disabledRedo ? 'disabled' : ''} onClick={onRedoClick}>
-                    {Device.ios ?
-                        <SvgIcon slot="media" symbolId={IconRedoIos.id} className={'icon icon-svg'} /> :
-                        <SvgIcon slot="media" symbolId={IconRedoAndroid.id} className={'icon icon-svg'} />
-                    }
-                </Link>
-            </Fragment>
-        );
-    },
-    getEditOptions: ({ disabled, onEditClick, onAddClick }) => {
-        return (
-            <Fragment>
-                <Link iconOnly className={disabled ? 'disabled' : ''} id="btn-edit" href={false} onClick={onEditClick}>
-                    {Device.ios ?
-                        <SvgIcon slot="media" symbolId={IconEditSettingsIos.id} className={'icon icon-svg'} /> :
-                        <SvgIcon slot="media" symbolId={IconEditSettingsAndroid.id} className={'icon icon-svg'} />
-                    }
-                </Link>
-                <Link iconOnly className={disabled ? 'disabled' : ''} id="btn-add" href={false} onClick={onAddClick}>
-                    {Device.ios ?
-                        <SvgIcon slot="media" symbolId={IconAddOtherIos.id} className={'icon icon-svg'} /> :
-                        <SvgIcon slot="media" symbolId={IconAddOtherAndroid.id} className={'icon icon-svg'} />
-                    }
-                </Link>
-            </Fragment>
-        );
-    }
+const icons = {
+    edit: { ios: IconEditSettingsIos, android: IconEditSettingsAndroid },
+    add: { ios: IconAddOtherIos, android: IconAddOtherAndroid },
+    undo: { ios: IconUndoIos, android: IconUndoAndroid },
+    redo: { ios: IconRedoIos, android: IconRedoAndroid },
 };
 
-export const initThemeColors = () => {
-    Common.EditorApi.get().asc_registerCallback('asc_onSendThemeColors', (colors, standartColors) => {
-        Common.Utils.ThemeColor.setColors(colors, standartColors);
-    });
+export const toolbarOptions = {
+    getUndoRedo: ({ disabledUndo, disabledRedo, onUndoClick, onRedoClick }) => (
+        <Fragment>
+            <Link iconOnly className={disabledUndo ? 'disabled' : ''} onClick={onUndoClick}>
+                <PlatformIcon {...icons.undo} />
+            </Link>
+            <Link iconOnly className={disabledRedo ? 'disabled' : ''} onClick={onRedoClick}>
+                <PlatformIcon {...icons.redo} />
+            </Link>
+        </Fragment>
+    ),
+    getEditOptions: ({ disabled, onEditClick, onAddClick }) => (
+        <Fragment>
+            <Link iconOnly className={disabled ? 'disabled' : ''} id="btn-edit" href={false} onClick={onEditClick}>
+                <PlatformIcon {...icons.edit} />
+            </Link>
+            <Link iconOnly className={disabled ? 'disabled' : ''} id="btn-add" href={false} onClick={onAddClick}>
+                <PlatformIcon {...icons.add} />
+            </Link>
+        </Fragment>
+    )
 };
+
+export const initThemeColors = commonInitThemeColors;
 
 export const initCellInfo = (props) => {
     const api = Common.EditorApi.get();
@@ -85,24 +76,44 @@ export const initCellInfo = (props) => {
         }
     });
 
-    storeFocusObjects.intf = {};
+    // Build standard getters using the common factory
+    buildFocusObjectGetters(storeFocusObjects, {
+        getParagraphObject: { type: Asc.c_oAscTypeSelectElement.Paragraph },
+        getShapeObject: {
+            type: Asc.c_oAscTypeSelectElement.Image,
+            check: obj => obj.get_ObjectValue()?.get_ShapeProperties()
+        },
+        getImageObject: { type: Asc.c_oAscTypeSelectElement.Image },
+        getChartObject: {
+            type: Asc.c_oAscTypeSelectElement.Image,
+            check: obj => obj.get_ObjectValue()?.get_ChartProperties()
+        },
+    });
 
+    // Spreadsheet-specific: getSelections with cell-specific logic
     storeFocusObjects.intf.getSelections = () => {
         const selections = [];
         let isCell, isRow, isCol, isAll, isChart, isImage, isShape, isShapeText, isChartText;
         let locked = false;
 
-        switch (storeFocusObjects._cellInfo.asc_getSelectionType()) {
-            case Asc.c_oAscSelectionType.RangeCells:     isCell = true; break;
-            case Asc.c_oAscSelectionType.RangeRow:        isRow = true; break;
-            case Asc.c_oAscSelectionType.RangeCol:        isCol = true; break;
-            case Asc.c_oAscSelectionType.RangeMax:        isAll = true; break;
-            case Asc.c_oAscSelectionType.RangeImage:      isImage = true; break;
-            case Asc.c_oAscSelectionType.RangeShape:      isShape = true; break;
-            case Asc.c_oAscSelectionType.RangeChart:      isChart = true; break;
-            case Asc.c_oAscSelectionType.RangeChartText:  isChartText = true; break;
-            case Asc.c_oAscSelectionType.RangeShapeText:  isShapeText = true; break;
-        }
+        const selectionTypeMap = {
+            [Asc.c_oAscSelectionType.RangeCells]: 'isCell',
+            [Asc.c_oAscSelectionType.RangeRow]: 'isRow',
+            [Asc.c_oAscSelectionType.RangeCol]: 'isCol',
+            [Asc.c_oAscSelectionType.RangeMax]: 'isAll',
+            [Asc.c_oAscSelectionType.RangeImage]: 'isImage',
+            [Asc.c_oAscSelectionType.RangeShape]: 'isShape',
+            [Asc.c_oAscSelectionType.RangeChart]: 'isChart',
+            [Asc.c_oAscSelectionType.RangeChartText]: 'isChartText',
+            [Asc.c_oAscSelectionType.RangeShapeText]: 'isShapeText',
+        };
+
+        const selType = storeFocusObjects._cellInfo.asc_getSelectionType();
+        const flags = { isCell, isRow, isCol, isAll, isChart, isImage, isShape, isShapeText, isChartText };
+        const flagName = selectionTypeMap[selType];
+        if (flagName) flags[flagName] = true;
+
+        ({ isCell, isRow, isCol, isAll, isChart, isImage, isShape, isShapeText, isChartText } = flags);
 
         if (isImage || isShape || isChart) {
             isImage = isShape = isChart = false;
@@ -150,56 +161,6 @@ export const initCellInfo = (props) => {
 
         return selections;
     };
-
-    storeFocusObjects.intf.getShapeObject = () => {
-        const matches = [];
-        for (let obj of storeFocusObjects._focusObjects) {
-            if (obj.get_ObjectType() === Asc.c_oAscTypeSelectElement.Image &&
-                obj.get_ObjectValue() && obj.get_ObjectValue().get_ShapeProperties()) {
-                matches.push(obj);
-            }
-        }
-        if (matches.length > 0) {
-            return matches[matches.length - 1].get_ObjectValue();
-        }
-    };
-
-    storeFocusObjects.intf.getImageObject = () => {
-        const matches = [];
-        for (let obj of storeFocusObjects._focusObjects) {
-            if (obj.get_ObjectType() === Asc.c_oAscTypeSelectElement.Image) {
-                matches.push(obj);
-            }
-        }
-        if (matches.length > 0) {
-            return matches[matches.length - 1].get_ObjectValue();
-        }
-    };
-
-    storeFocusObjects.intf.getChartObject = () => {
-        const matches = [];
-        for (let obj of storeFocusObjects._focusObjects) {
-            if (obj.get_ObjectType() === Asc.c_oAscTypeSelectElement.Image &&
-                obj.get_ObjectValue() && obj.get_ObjectValue().get_ChartProperties()) {
-                matches.push(obj);
-            }
-        }
-        if (matches.length > 0) {
-            return matches[matches.length - 1].get_ObjectValue();
-        }
-    };
-
-    storeFocusObjects.intf.getParagraphObject = () => {
-        const matches = [];
-        for (let obj of storeFocusObjects._focusObjects) {
-            if (obj.get_ObjectType() === Asc.c_oAscTypeSelectElement.Paragraph) {
-                matches.push(obj);
-            }
-        }
-        if (matches.length > 0) {
-            return matches[matches.length - 1].get_ObjectValue();
-        }
-    };
 };
 
 export const initEditorStyles = (storeCellSettings) => {
@@ -246,17 +207,22 @@ export const ContextMenu = {
         const comments = cellInfo.asc_getComments();
         const isSolved = comments[0] && comments[0].asc_getSolved();
 
-        switch (selType) {
-            case Asc.c_oAscSelectionType.RangeCells:     isCell = true; break;
-            case Asc.c_oAscSelectionType.RangeRow:        isRow = true; break;
-            case Asc.c_oAscSelectionType.RangeCol:        isCol = true; break;
-            case Asc.c_oAscSelectionType.RangeMax:        isAll = true; break;
-            case Asc.c_oAscSelectionType.RangeImage:      isImage = true; break;
-            case Asc.c_oAscSelectionType.RangeShape:      isShape = true; break;
-            case Asc.c_oAscSelectionType.RangeChart:      isChart = true; break;
-            case Asc.c_oAscSelectionType.RangeChartText:  isChartText = true; break;
-            case Asc.c_oAscSelectionType.RangeShapeText:  isShapeText = true; break;
-        }
+        const selectionTypeMap = {
+            [Asc.c_oAscSelectionType.RangeCells]: 'isCell',
+            [Asc.c_oAscSelectionType.RangeRow]: 'isRow',
+            [Asc.c_oAscSelectionType.RangeCol]: 'isCol',
+            [Asc.c_oAscSelectionType.RangeMax]: 'isAll',
+            [Asc.c_oAscSelectionType.RangeImage]: 'isImage',
+            [Asc.c_oAscSelectionType.RangeShape]: 'isShape',
+            [Asc.c_oAscSelectionType.RangeChart]: 'isChart',
+            [Asc.c_oAscSelectionType.RangeChartText]: 'isChartText',
+            [Asc.c_oAscSelectionType.RangeShapeText]: 'isShapeText',
+        };
+
+        const flags = { isCell, isRow, isCol, isAll, isChart, isImage, isShape, isShapeText, isChartText };
+        const flagName = selectionTypeMap[selType];
+        if (flagName) flags[flagName] = true;
+        ({ isCell, isRow, isCol, isAll, isChart, isImage, isShape, isShapeText, isChartText } = flags);
 
         if ((isImage || isShape || isChart || isShapeText || isChartText) && wsProps.Objects) {
             return [];
