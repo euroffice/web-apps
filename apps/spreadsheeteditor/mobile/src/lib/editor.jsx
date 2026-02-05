@@ -8,7 +8,20 @@ import {
     icons
 } from '../../../../common/mobile/lib/editor';
 
+/**
+ * Toolbar option components for spreadsheet editor
+ * @namespace
+ */
 export const toolbarOptions = {
+    /**
+     * Renders the undo and redo toolbar buttons
+     * @param {object} props
+     * @param {boolean} props.disabledUndo - Whether undo button should be disabled
+     * @param {boolean} props.disabledRedo - Whether redo button should be disabled
+     * @param {function} props.onUndoClick - Handler for undo button click
+     * @param {function} props.onRedoClick - Handler for redo button click
+     * @returns {JSX.Element} Undo/redo buttons fragment
+     */
     getUndoRedo: ({ disabledUndo, disabledRedo, onUndoClick, onRedoClick }) => (
         <Fragment>
             <Link iconOnly className={disabledUndo ? 'disabled' : ''} onClick={onUndoClick}>
@@ -19,6 +32,14 @@ export const toolbarOptions = {
             </Link>
         </Fragment>
     ),
+    /**
+     * Renders the edit and add toolbar buttons
+     * @param {object} props
+     * @param {boolean} props.disabled - Whether buttons should be disabled
+     * @param {function} props.onEditClick - Handler for edit button click
+     * @param {function} props.onAddClick - Handler for add button click
+     * @returns {JSX.Element} Toolbar buttons fragment
+     */
     getEditOptions: ({ disabled, onEditClick, onAddClick }) => (
         <Fragment>
             <Link iconOnly className={disabled ? 'disabled' : ''} id="btn-edit" href={false} onClick={onEditClick}>
@@ -31,8 +52,18 @@ export const toolbarOptions = {
     )
 };
 
+/** Re-export of common theme colors initialization */
 export const initThemeColors = commonInitThemeColors;
 
+/**
+ * Initializes cell info tracking and selection handling
+ * Registers callbacks for selection changes and builds getter methods on the store
+ * @param {object} props - Props containing MobX stores
+ * @param {object} props.storeFocusObjects - Store for tracking focused objects
+ * @param {object} props.storeCellSettings - Store for cell settings
+ * @param {object} props.storeTextSettings - Store for text settings
+ * @param {object} props.storeChartSettings - Store for chart settings
+ */
 export const initCellInfo = (props) => {
     const api = Common.EditorApi.get();
     const storeFocusObjects = props.storeFocusObjects;
@@ -145,12 +176,22 @@ export const initCellInfo = (props) => {
     };
 };
 
+/**
+ * Initializes cell styles by registering API callback
+ * @param {object} storeCellSettings - MobX store for cell settings
+ */
 export const initEditorStyles = (storeCellSettings) => {
     Common.EditorApi.get().asc_registerCallback('asc_onInitEditorStyles', (styles) => {
         storeCellSettings.initCellStyles(styles);
     });
 };
 
+/**
+ * Initializes font settings by registering API callbacks for editor fonts and selection changes
+ * @param {object} props - Props containing MobX stores
+ * @param {object} props.storeCellSettings - Store for cell settings
+ * @param {object} props.storeTextSettings - Store for text settings
+ */
 export const initFonts = (props) => {
     const api = Common.EditorApi.get();
     const storeCellSettings = props.storeCellSettings;
@@ -168,7 +209,27 @@ export const initFonts = (props) => {
 };
 
 
+/**
+ * Context menu configuration and handlers for spreadsheet editor
+ * @namespace
+ */
 export const ContextMenu = {
+    /**
+     * Maps the current selection state to context menu items
+     * Analyzes cell info, selection type, and permissions to build menu options
+     * Handles cells, rows, columns, images, shapes, charts, and hyperlinks
+     * @param {object} controller - The context menu controller instance
+     * @param {object} controller.props - Controller props with permissions and state
+     * @param {function} controller.props.t - Translation function
+     * @param {boolean} controller.props.canViewComments - Whether user can view comments
+     * @param {boolean} controller.props.isDisconnected - Whether user is disconnected
+     * @param {object} controller.props.wsProps - Worksheet protection properties
+     * @param {boolean} controller.props.wsLock - Whether worksheet is locked
+     * @param {boolean} controller.props.isResolvedComments - Whether to show resolved comments
+     * @param {boolean} controller.props.isVersionHistoryMode - Whether in version history mode
+     * @param {Array} controller.extraItems - Overflow items for mobile "More" menu
+     * @returns {Array<{event: string, icon?: string, caption?: string}>} Menu items array
+     */
     mapMenuItems(controller) {
         const { t } = controller.props;
         const _t = t('ContextMenu', { returnObjects: true });
@@ -318,6 +379,16 @@ export const ContextMenu = {
         return itemsIcon.concat(itemsText);
     },
 
+    /**
+     * Handles context menu item click events for spreadsheet-specific actions
+     * Processes cut, paste, delete, merge, wrap, hide/show, freeze panes, and more
+     * @param {object} controller - The context menu controller instance
+     * @param {object} controller.props - Controller props
+     * @param {function} controller.props.openOptions - Function to open option panels
+     * @param {function} controller.onMergeCells - Function to handle cell merge
+     * @param {string} action - The action identifier from the clicked menu item
+     * @returns {boolean} True if action was handled, false otherwise
+     */
     handleMenuItemClick(controller, action) {
         const api = Common.EditorApi.get();
         const cellInfo = api.asc_getCellInfo();

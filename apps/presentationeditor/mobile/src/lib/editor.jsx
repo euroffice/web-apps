@@ -9,6 +9,15 @@ import {
     icons
 } from '../../../../common/mobile/lib/editor';
 
+/**
+ * Renders the edit and add toolbar buttons
+ * @param {object} props
+ * @param {boolean} props.disabledEdit - Whether edit button should be disabled
+ * @param {boolean} props.disabledAdd - Whether add button should be disabled
+ * @param {function} props.onEditClick - Handler for edit button click
+ * @param {function} props.onAddClick - Handler for add button click
+ * @returns {JSX.Element} Toolbar buttons fragment
+ */
 export const getToolbarOptions = ({ disabledEdit, disabledAdd, onEditClick, onAddClick }) => (
     <Fragment>
         <Link iconOnly className={disabledEdit ? 'disabled' : ''} id="btn-edit" href={false} onClick={onEditClick}>
@@ -20,6 +29,15 @@ export const getToolbarOptions = ({ disabledEdit, disabledAdd, onEditClick, onAd
     </Fragment>
 );
 
+/**
+ * Renders the undo and redo toolbar buttons
+ * @param {object} props
+ * @param {boolean} props.disabledUndo - Whether undo button should be disabled
+ * @param {boolean} props.disabledRedo - Whether redo button should be disabled
+ * @param {function} props.onUndoClick - Handler for undo button click
+ * @param {function} props.onRedoClick - Handler for redo button click
+ * @returns {JSX.Element} Undo/redo buttons fragment
+ */
 export const getUndoRedo = ({ disabledUndo, disabledRedo, onUndoClick, onRedoClick }) => (
     <Fragment>
         <Link iconOnly className={disabledUndo ? 'disabled' : ''} onClick={onUndoClick}>
@@ -31,8 +49,14 @@ export const getUndoRedo = ({ disabledUndo, disabledRedo, onUndoClick, onRedoCli
     </Fragment>
 );
 
+/** Re-export of common theme colors initialization */
 export const initThemeColors = commonInitThemeColors;
 
+/**
+ * Initializes font settings by registering API callbacks for font changes
+ * Tracks font family, size, bold, italic, underline, and strikethrough states
+ * @param {object} storeTextSettings - MobX store for text settings
+ */
 export const initFonts = (storeTextSettings) => {
     const api = Common.EditorApi.get();
     api.asc_registerCallback('asc_onInitEditorFonts', (fonts, select) => {
@@ -58,6 +82,11 @@ export const initFonts = (storeTextSettings) => {
     });
 };
 
+/**
+ * Initializes slide theme and layout styles by registering API callbacks
+ * Processes standard and custom themes, and tracks layout updates
+ * @param {object} storeSlideSettings - MobX store for slide settings
+ */
 export const initEditorStyles = (storeSlideSettings) => {
     const api = Common.EditorApi.get();
     api.asc_registerCallback('asc_onInitEditorStyles', (styles) => {
@@ -80,6 +109,12 @@ export const initEditorStyles = (storeSlideSettings) => {
     });
 };
 
+/**
+ * Initializes focus object tracking and builds getter/filter methods on the store
+ * Sets up callbacks for tracking selected elements and provides methods to
+ * query specific object types (slide, paragraph, shape, table, chart, link, image)
+ * @param {object} storeFocusObjects - MobX store for focus objects
+ */
 export const initFocusObjects = (storeFocusObjects) => {
     Common.EditorApi.get().asc_registerCallback('asc_onFocusObject', (objects) => {
         storeFocusObjects.resetFocusObjects(objects);
@@ -161,12 +196,21 @@ export const initFocusObjects = (storeFocusObjects) => {
     };
 };
 
+/**
+ * Initializes table template styles by registering API callback
+ * @param {object} storeTableSettings - MobX store for table settings
+ */
 export const initTableTemplates = (storeTableSettings) => {
     Common.EditorApi.get().asc_registerCallback('asc_onInitTableTemplates', (styles) => {
         storeTableSettings.initTableTemplates(styles);
     });
 };
 
+/**
+ * Registers callback to update chart style previews when chart styles change
+ * @param {object} storeChartSettings - MobX store for chart settings
+ * @param {object} storeFocusObjects - MobX store for focus objects
+ */
 export const updateChartStyles = (storeChartSettings, storeFocusObjects) => {
     const api = Common.EditorApi.get();
     api.asc_registerCallback('asc_onUpdateChartStyles', () => {
@@ -178,6 +222,10 @@ export const updateChartStyles = (storeChartSettings, storeFocusObjects) => {
     });
 };
 
+/**
+ * Renders comment controller components for editing mode
+ * @returns {JSX.Element} Fragment containing CommentsController and ViewCommentsController
+ */
 export const getEditCommentControllers = () => (
     <Fragment>
         <CommentsController />
@@ -185,7 +233,25 @@ export const getEditCommentControllers = () => (
     </Fragment>
 );
 
+/**
+ * Context menu configuration and handlers for presentation editor
+ * @namespace
+ */
 export const ContextMenu = {
+    /**
+     * Maps the current selection state to context menu items
+     * Analyzes selected elements (text, images, charts, shapes, tables, links, slides)
+     * and returns appropriate menu options based on lock state and permissions
+     * @param {object} controller - The context menu controller instance
+     * @param {object} controller.props - Controller props with permissions and state
+     * @param {function} controller.props.t - Translation function
+     * @param {boolean} controller.props.canViewComments - Whether user can view comments
+     * @param {boolean} controller.props.isDisconnected - Whether user is disconnected
+     * @param {boolean} controller.props.isVersionHistoryMode - Whether in version history mode
+     * @param {boolean} controller.isComments - Whether comments exist on selection
+     * @param {Array} controller.extraItems - Overflow items for mobile "More" menu
+     * @returns {Array<{event: string, icon?: string, caption?: string}>} Menu items array
+     */
     mapMenuItems(controller) {
         const { t } = controller.props;
         const _t = t('ContextMenu', { returnObjects: true });
@@ -288,6 +354,17 @@ export const ContextMenu = {
         return itemsIcon.concat(itemsText);
     },
 
+    /**
+     * Handles context menu item click events for presentation-specific actions
+     * Processes cut, paste, merge/split cells, delete, edit, links, and comments
+     * @param {object} controller - The context menu controller instance
+     * @param {object} controller.props - Controller props
+     * @param {function} controller.props.openOptions - Function to open option panels
+     * @param {function} controller.showSplitModal - Function to show table split modal
+     * @param {function} controller.openLink - Function to open hyperlinks
+     * @param {string} action - The action identifier from the clicked menu item
+     * @returns {boolean} True if action was handled, false otherwise
+     */
     handleMenuItemClick(controller, action) {
         const api = Common.EditorApi.get();
 
