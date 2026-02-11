@@ -90,6 +90,35 @@ Each directory has a range of LESS files broken down by area, eg slider, search,
 
 ## Building
 
+### Full Build
+
+Run `docker compose` from the `euro-office/fork/build` directory:
+
+```bash
+# From euro-office/fork/build, enter the container:
+docker compose exec eo bash
+
+# Then inside the container:
+export BUILD_NUMBER=0 THEME=nextcloud && cd /var/www/onlyoffice/web-apps-develop/build && grunt --skip-imagemin --skip-babel
+```
+
+### Build Flags
+
+| Flag | Description |
+|------|-------------|
+| `--skip-imagemin` | Skip image optimization (faster builds) |
+| `--skip-babel` | Skip ES5 transpilation for IE compatibility (modern browsers only, no `ie/` directory created) |
+
+### Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `THEME` | Theme name to use (e.g., `nextcloud`, `default`) |
+| `BUILD_NUMBER` | Build number for versioning |
+
+## Style modifications
+## Building
+
 To build this project execute the following commands
 
 ```shell
