@@ -936,8 +936,8 @@ module.exports = function(grunt) {
     grunt.registerTask('deploy-monaco',                 ['monaco-init', 'clean', 'copy']);
     grunt.registerTask('deploy-common-embed',           ['common-embed-init', 'clean', 'copy']);
 
-    grunt.registerTask('deploy-app-main',               [...spritesTask, 'main-app-init', 'clean:prebuild', ...imageminTask, 'less',
-                                                            'requirejs', 'babel', 'terser', 'concat', 'copy', 'svgmin', 'inline', 'json-minify',
+    grunt.registerTask('deploy-app-main',               ['main-app-init', 'clean:prebuild', ...imageminTask, 'less',
+                                                            'requirejs', 'babel', 'terser', 'concat', 'copy', 'svgmin', 'replace:indexhtml', 'inline', 'json-minify',
                                                             'replace:writeVersion', 'replace:prepareHelp', 'clean:postbuild']);
 
     grunt.registerTask('deploy-app-mobile',             ['mobile-app-init', 'clean:deploy', /*'cssmin',*/ /*'copy:template-backup',*/
@@ -1000,7 +1000,8 @@ module.exports = function(grunt) {
         'init-build-visioeditor', 'main-app-init', 'less'
     ]);
 
-    grunt.registerTask('default', ['deploy-common-component',
+    grunt.registerTask('default', [...spritesTask,
+                                   'deploy-common-component',
                                    'deploy-documenteditor-component',
                                    'deploy-spreadsheeteditor-component',
                                    'deploy-presentationeditor-component',

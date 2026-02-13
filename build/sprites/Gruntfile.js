@@ -209,14 +209,10 @@ module.exports = function (grunt, rootpathprefix) {
                     id: {
                         separator: ""
                     },
-                    transform: [{
-                        svgo: {
-                            plugins: [
-                                'removeXMLNS',
-                                // Note: removed removeAttrs for fill/stroke - v2 icons need these for theming
-                            ]
-                        },
-                    }]
+                    // Disable SVGO transform - svg-sprite's built-in SVGO has a
+                    // callback bug on Node 18 (cb inside try-catch). SVG optimization
+                    // is handled separately by the svgmin grunt task instead.
+                    transform: []
                 },
                 mode: {
                     symbol: {
