@@ -370,6 +370,7 @@ module.exports = function(grunt) {
                 }
             },
             copy: {
+                ...packageFile['apps-common'].copy,
                 'images-app': {
                     files: packageFile['apps-common']['imagemin']['images-common']
                 }
