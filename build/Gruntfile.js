@@ -146,17 +146,13 @@ module.exports = function(grunt) {
     addons.forEach((element,index,self) => self[index] = path.join('../..', element, '/build'));
     addons = addons.filter(element => grunt.file.isDir(element));
 
-    // Theme support - load theme.less from themes directory
-    // Note: theme files may not exist yet at load time — deploy-theme copies them first.
-    // appendThemeFiles resolves lazily so the check happens after deploy-theme runs.
+    // Theme support — load theme.less directly from theme/ folder (no copy to source tree)
     const theme = process.env.THEME || 'default';
-    const themePath = path.join('../apps/common/main/resources/less/themes', theme);
-    const themeEntry = path.join(themePath, 'theme.less');
+    const themeEntry = path.join('..', 'theme', theme, 'assets', 'less', 'theme.less');
     let themeFiles = null; // null = not yet resolved
 
     // Helper to append theme files to a LESS source array (resolves lazily)
     global.appendThemeFiles = function(src) {
-        // Resolve on first call (after deploy-theme has copied files)
         if (themeFiles === null) {
             if (grunt.file.exists(themeEntry)) {
                 themeFiles = [themeEntry];
@@ -178,48 +174,42 @@ module.exports = function(grunt) {
     // Initialize themeMeta for config.json values (populated by deploy-theme task)
     global.themeMeta = {};
 
-    // deploy-theme: copy theme assets into place and load config.json
-    grunt.registerTask('deploy-theme', 'Deploy theme assets and load config', function() {
+    // deploy-theme: load config.json from theme folder.
+    // LESS files are referenced directly from theme/ via appendThemeFiles — no copy needed.
+    grunt.registerTask('deploy-theme', 'Load theme config', function() {
         const themeRoot = path.join('..', 'theme', theme);
 
         global.themeMeta = {};
 
-        // Load config.json
         const configPath = path.join(themeRoot, 'meta', 'config.json');
         if (grunt.file.exists(configPath)) {
             global.themeMeta = grunt.file.readJSON(configPath);
             grunt.log.writeln('Theme config loaded: ' + configPath);
         }
 
-        // Copy images → desktop and mobile resource directories
+        if (!grunt.file.isDir(themeRoot) && theme !== 'default') {
+            grunt.log.warn('Theme directory not found: ' + themeRoot);
+        }
+    });
+
+    // deploy-theme-images: copy theme images to BUILD_ROOT.
+    // Runs after deploy-apps-common (which cleans BUILD_ROOT/web-apps/apps/common).
+    grunt.registerTask('deploy-theme-images', 'Copy theme images to build output', function() {
+        const themeRoot = path.join('..', 'theme', theme);
         const imgSrc = path.join(themeRoot, 'assets', 'img');
-        const imgDests = [
-            path.join('..', 'apps', 'common', 'main', 'resources', 'img'),
-            path.join('..', 'apps', 'common', 'mobile', 'resources', 'img')
-        ];
+
         if (grunt.file.isDir(imgSrc)) {
+            const imgDests = [
+                path.join(BUILD_ROOT, 'web-apps', 'apps', 'common', 'main', 'resources', 'img'),
+                path.join(BUILD_ROOT, 'web-apps', 'apps', 'common', 'mobile', 'resources', 'img')
+            ];
             imgDests.forEach(function(imgDest) {
                 grunt.file.expandMapping('**/*', imgDest, { cwd: imgSrc, flatten: false, filter: 'isFile' })
                     .forEach(function(f) {
                         grunt.file.copy(f.src[0], f.dest);
                     });
             });
-            grunt.log.writeln('Theme images deployed from ' + imgSrc);
-        }
-
-        // Copy LESS → apps/common/main/resources/less/themes/{THEME}/
-        const lessSrc = path.join(themeRoot, 'assets', 'less');
-        const lessDest = path.join('..', 'apps', 'common', 'main', 'resources', 'less', 'themes', theme);
-        if (grunt.file.isDir(lessSrc)) {
-            grunt.file.expandMapping('**/*', lessDest, { cwd: lessSrc, flatten: false, filter: 'isFile' })
-                .forEach(function(f) {
-                    grunt.file.copy(f.src[0], f.dest);
-                });
-            grunt.log.writeln('Theme LESS deployed from ' + lessSrc);
-        }
-
-        if (!grunt.file.isDir(themeRoot) && theme !== 'default') {
-            grunt.log.warn('Theme directory not found: ' + themeRoot);
+            grunt.log.writeln('Theme images deployed to ' + BUILD_ROOT);
         }
     });
 
@@ -1064,6 +1054,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('default', ['deploy-theme',
                                    'deploy-common-component',
+                                   'deploy-theme-images',
                                    'deploy-documenteditor-component',
                                    'deploy-spreadsheeteditor-component',
                                    'deploy-presentationeditor-component',
