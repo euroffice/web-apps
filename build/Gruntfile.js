@@ -148,7 +148,8 @@ module.exports = function(grunt) {
     addons = addons.filter(element => grunt.file.isDir(element));
 
     // Theme support — load theme.less directly from theme/ folder (no copy to source tree)
-    const theme = process.env.THEME || 'euro-office';
+    const defaultTheme = 'euro-office';
+    const theme = process.env.THEME || defaultTheme;
     const themeEntry = path.join('..', 'theme', theme, 'assets', 'less', 'theme.less');
     let themeFiles = null; // null = not yet resolved
 
@@ -160,7 +161,7 @@ module.exports = function(grunt) {
                 grunt.log.writeln('Theme: ' + theme.green);
             } else {
                 themeFiles = [];
-                if (theme !== 'default') {
+                if (theme !== defaultTheme) {
                     grunt.log.warn('Theme not found: ' + themeEntry);
                 }
             }
