@@ -48,6 +48,7 @@ module.exports = function(grunt) {
 
     let iconv_lite, encoding = process.env.SYSTEM_ENCODING;
     grunt.log.writeln('platform: ' + process.platform.green);
+    grunt.log.writeln('theme: ' + theme.green);
     if (process.platform == 'win32') {
         const cmdencoding = require('child_process').execSync('chcp');
         grunt.log.writeln(cmdencoding);
