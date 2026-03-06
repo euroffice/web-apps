@@ -1,90 +1,228 @@
 [![License](https://img.shields.io/badge/License-GNU%20AGPL%20V3-green.svg?style=flat)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 
-<h1 > ONLYOFFICE web-apps</h1>
+## web-apps
 
-## 💡 Overview
+The frontend for [ONLYOFFICE Document Server][2] and [ONLYOFFICE Desktop Editors](https://github.com/ONLYOFFICE/DesktopEditors). Builds the program interface and allows the user create, edit, save and export text documents, spreadsheets, and presentations.
 
-Welcome to the `web-apps` repository! 
+## Previous versions
 
-It’s the frontend for [ONLYOFFICE Document Server](https://github.com/ONLYOFFICE/DocumentServer) and [ONLYOFFICE Desktop Editors](https://github.com/ONLYOFFICE/DesktopEditors) — the part you interact with. It powers the interface that lets you create, edit, save, and export your text documents, spreadsheets, and presentations.
+Until 2019-10-23 the repository was called web-apps-pro.
 
-*Previous versions: Until 2019-10-23 the repository was called web-apps-pro.*
+## Project information
 
----
+Official website: [https://www.onlyoffice.com/](https://www.onlyoffice.com "https://www.onlyoffice.com")
 
-## ⚙️ How it fits in the ONLYOFFICE ecosystem
+Code repository: [https://github.com/ONLYOFFICE/web-apps](https://github.com/ONLYOFFICE/web-apps "https://github.com/ONLYOFFICE/web-apps")
+
+## User feedback and support
+
+If you have any problems with or questions about [ONLYOFFICE Document Server][2], please visit our official forum: [forum.onlyoffice.com][1] or you can ask and answer ONLYOFFICE development questions on [Stack Overflow][3].
+
+  [1]: https://forum.onlyoffice.com
+  [2]: https://github.com/ONLYOFFICE/DocumentServer
+  [3]: http://stackoverflow.com/questions/tagged/onlyoffice
+
+## Styling
+
+Styling is accomplished via LESS, there is the content set by ONLYOFFICE. Before you do anything, please read the section under this about modifications.
+
+There are several hundred LESS files, organised in several folders:
+
+#### Common (shared)
+
+```shell
+apps/common/embed/resources/less/
+apps/common/forms/resources/less/
+apps/common/main/resources/less/
+apps/common/main/resources/mods/less/
+apps/common/mobile/resources/less/
+```
+
+Common is the most important and many of the others just import common.
+
+They use variables:
+
+`apps/common/main/resources/less/variables.less` <- majority seem to be shared from there.
+
+The variables seem to be a bit haphazard in approach. There is some structure, but not uniformly adhered to. The variables are used in other files, so the lack of structure is not so much an issue.
+
+Importing is via relative paths.
+
+#### Document Editor
+
+```shell
+apps/documenteditor/embed/resources/less/
+apps/documenteditor/forms/resources/less/
+apps/documenteditor/main/resources/less/
+apps/documenteditor/mobile/src/less/
+```
+
+#### Spreadsheet Editor
+
+```shell
+apps/spreadsheeteditor/main/resources/less/
+apps/spreadsheeteditor/mobile/src/less/
+```
+
+#### Presentation Editor
+
+```shell
+apps/presentationeditor/embed/resources/less/
+apps/presentationeditor/main/resources/less/
+apps/presentationeditor/mobile/src/less/
+```
+
+#### PDF Editor
+
+```shell
+apps/pdfeditor/main/resources/less/
+```
 
 
-| Layer | Component | Role |
-|-----------|------------|------|
-| 🧠 **Engine** | [Document Server ↗](https://github.com/ONLYOFFICE/DocumentServer) | Handles editing logic, file conversion, real-time collaboration |
-| 💻 **Interface** | **Web Apps** *(this repo)* | Provides the browser-based user interface |
-| 🧩 **Integrations** | [Integration API ↗](https://api.onlyoffice.com/docs/docs-api/get-started/basic-concepts/?utm_source=github&utm_medium=cpc&utm_campaign=GitHubWebApps) | Embeds editors into custom web platforms or apps |
+#### Visio Editor
 
-Together, these layers make **ONLYOFFICE** a full-fledged online editing suite.
-
----
-
-## 🚀 Key highlights
-
-✨ **Multiple editors, one codebase**
-- [Document Editor](https://www.onlyoffice.com/word-processor?utm_source=github&utm_medium=cpc&utm_campaign=GitHubWebApps) 📝  
-- [Spreadsheet Editor](https://www.onlyoffice.com/sheets?utm_source=github&utm_medium=cpc&utm_campaign=GitHubWebApps) 📊  
-- [Presentation Editor](https://www.onlyoffice.com/slides?utm_source=github&utm_medium=cpc&utm_campaign=GitHubWebApps) 📽️ 
-- [PDF Editor](https://www.onlyoffice.com/pdf-editor?utm_source=github&utm_medium=cpc&utm_campaign=GitHubWebApps) ✂️
-- [Form Creator](https://www.onlyoffice.com/form-creator?utm_source=github&utm_medium=cpc&utm_campaign=GitHubWebApps) 📝
-- [Diagram Viewer](https://www.onlyoffice.com/diagram-viewer?utm_source=github&utm_medium=cpc&utm_campaign=GitHubWebApps) 🖼️
-
-💬 **Real-time collaboration**
-- Co-editing 
-- Comments, mentions, and version history
-- Built-in chat and track changes  
-
-⚡ **Developer-friendly integration**
-- Embed editors in any app using [ONLYOFFICE API ↗](https://api.onlyoffice.com/docs/docs-api/get-started/basic-concepts/?utm_source=github&utm_medium=cpc&utm_campaign=GitHubWebApps)
-- Customize toolbar, permissions, and callback behavior  
-
-🌍 **Fully browser-compatible**
-- Works on all major browsers  
-- Localized in 45 languages  
-- Optimized for responsive performance  
-
----
-
-## 🧱 Folder overview
-
-Here’s a quick tour of what lives inside this repository:
-
-| Folder | Description |
-|--------|--------------|
-| `.github/workflows/` | GitHub Action workflows for CI, build validation, testing, and checks. |
-| `.vscode/` | Editor configuration for VS Code.|
-| `apps/` | Core UI for the three editors (Documents, Spreadsheets, Presentations). This is where the frontend interface lives. |
-| `build/` | Build scripts, bundling configuration, and output settings for packaging the web editors. |
-| `test/` | Test suites and scripts used to validate functionality and stability. |
-| `translation/` | All localization files and translations. |
-| `vendor/` | Third-party libraries and dependencies used by the editors. |
+```shell
+apps/visioeditor/main/resources/less/
+```
 
 
-## 🔧 Want to build this yourself? 
+Each directory has a range of LESS files broken down by area, eg slider, search, buttons etc - too many to list here, but should be helpful in finding the correct place to make style changes
 
-If you’d like to compile or modify the editors yourself, use the [`build_tools`](https://github.com/ONLYOFFICE/build_tools) repository.
+## Building
 
-It automatically sets up dependencies and builds:
+### Full Build
 
-* [Docs (Document Server)](https://www.onlyoffice.com/docs?utm_source=github&utm_medium=cpc&utm_campaign=GitHubWebApps)  
-* [Desktop Editors](https://www.onlyoffice.com/desktop?utm_source=github&utm_medium=cpc&utm_campaign=GitHubWebApps)  
-* [Document Builder](https://www.onlyoffice.com/document-builder?utm_source=github&utm_medium=cpc&utm_campaign=GitHubWebApps)
+Run `docker compose` from the `euro-office/fork/build` directory:
 
-## Need help or have an idea? 💡
+```bash
+# From euro-office/fork/build, enter the container:
+docker compose exec eo bash
 
-We ❤️ community contributions!
+# Then inside the container:
+export BUILD_NUMBER=0 THEME=euro-office && cd /var/www/onlyoffice/web-apps-develop/build && grunt --skip-imagemin --skip-babel
+```
 
-* **🐞 Found a bug?** Please report it by creating an [issue](https://github.com/ONLYOFFICE/web-apps/issues).
-* **❓ Have a question?** Ask our community and developers on the [ONLYOFFICE Forum](https://community.onlyoffice.com).
-* **💡 Want to suggest a feature?** Share your ideas on our [feedback platform](https://feedback.onlyoffice.com/forums/966080-your-voice-matters).
-* **🧑‍💻 Need help for developers?** Check our [API documentation](https://api.onlyoffice.com/?utm_source=github&utm_medium=cpc&utm_campaign=GitHubWebApps).
+### Build Flags
 
----
+| Flag | Description |
+|------|-------------|
+| `--skip-imagemin` | Skip image optimization (faster builds) |
+| `--skip-babel` | Skip ES5 transpilation for IE compatibility (modern browsers only, no `ie/` directory created) |
 
-<p align="center"> Made with ❤️ by the ONLYOFFICE Team </p>
+### Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `THEME` | Theme name to use (e.g., `euro-office`, `default`) |
+| `BUILD_NUMBER` | Build number for versioning |
+
+## Style modifications
+## Building
+
+To build this project execute the following commands
+
+```shell
+cd build
+npm install
+grunt [optional grunt command]
+```
+
+### Building to specified directory
+
+A build directory can be specified by using an env variable
+
+```shell
+BUILD_ROOT=/path/to/build grunt [optional grunt command]
+```
+
+
+
+Two new build-time variables were introduced to the code to remove hard-coded paths and make the build configuration more flexible:
+
+```shell
+BUILD_ROOT
+SRC_ROOT
+```
+
+#### `BUILD_ROOT`
+
+Several JSON files define build instructions and previously contained hard-coded relative paths, for example:
+
+```shell
+build/common.json
+build/presentationeditor.json
+build/documenteditor.json
+...
+```
+
+
+These paths have been replaced with the `$BUILD_ROOT` variable. During the build process, `$BUILD_ROOT` is resolved to the actual build root directory, allowing the same configuration to work regardless of where the project is built or deployed.
+
+ #### `SRC_ROOT`
+
+Some HTML files include inline script replacements during the build (for example, `apps/api/documents/cache-scripts.html`). The referenced JavaScript paths were previously in `SRC_ROOT` relative to the file location in `BUILD_ROOT`.
+
+These paths have been updated to use the `@@SRC_ROOT@@` placeholder instead. At build time, this placeholder is replaced with the absolute source directory, ensuring that script references resolve correctly in all environments.
+
+
+
+### Building using a theme
+
+We want to make upstream updates as painless as possible. From the perspective of making modifications we have added theming capability to the office package.
+
+#### Theme folder structure
+
+Each theme is a self-contained folder under `theme/` at the web-apps root:
+
+```
+theme/euro-office/
+  meta/
+    config.json           # Brand values (company name, URLs, logo filenames)
+  assets/
+    img/header/           # Logo SVGs (copied to desktop + mobile resource dirs at build time)
+    less/                 # LESS variable overrides and CSS rule overrides
+```
+
+#### config.json
+
+Contains brand values that replace `{{PLACEHOLDER}}` tokens in JS and webpack `DefinePlugin` constants. Priority: environment variable > config.json > hardcoded default.
+
+```json
+{
+  "company_name": "Euro Office",
+  "app_title": "Euro Office",
+  "publisher_name": "Euro Office",
+  "publisher_url": "https://euro-office.example.com",
+  "mobile_logo_light": "eo_logo_light.svg",
+  "mobile_logo_dark": "eo_logo_dark.svg"
+}
+```
+
+#### Build
+
+```shell
+THEME=euro-office grunt
+```
+
+The `deploy-theme` task runs first and:
+1. Reads `config.json` into `global.themeMeta` for brand replacements
+2. Copies images to `apps/common/main/resources/img/` (desktop) and `apps/common/mobile/resources/img/` (mobile)
+3. Copies LESS to `apps/common/main/resources/less/themes/{THEME}/`
+
+LESS compilation and JS replacements then proceed as normal with theme files in place.
+
+#### Creating a new theme
+
+1. Copy `theme/euro-office/` to `theme/yourtheme/`
+2. Edit `meta/config.json` with your brand values
+3. Replace logo SVGs in `assets/img/header/`
+4. Adjust LESS variables in `assets/less/theme.less`
+5. Build with `THEME=yourtheme`
+
+#### LESS guidelines
+
+Use variables in `theme.less` as much as possible — this avoids duplicate CSS in the final output. Only use `overrides/` for rules that cannot be changed via variables. The overrides directory should mirror the structure of the main app for clarity.
+
+## License
+
+web-apps is released under an GNU AGPL v3.0 license. See the LICENSE file for more information.
