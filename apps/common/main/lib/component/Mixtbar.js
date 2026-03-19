@@ -191,11 +191,10 @@ define([
 
             setFolded: function(value) {
                 this.isFolded = value;
-
                 var me = this;
-                if ( this.isFolded ) {
-                    if (!optsFold.$box) optsFold.$box = me.$el.find('.box-controls');
+                if (!optsFold.$box) optsFold.$box = me.$el.find('.box-controls');
 
+                if ( this.isFolded ) {
                     optsFold.$bar.addClass('folded z-clear').toggleClass('expanded', false);
                     optsFold.$bar.find('.tabs .ribtab').removeClass('active');
                     optsFold.$bar.on($.support.transition.end, function (e) {
@@ -716,7 +715,7 @@ define([
                                 button.cmpEl.closest('.btn-slot').remove();
                                 if (group.children().length<1) {
                                     var in_more = group.closest('.more-container').length>0;
-                                    in_more ? group.next('.separator').remove() : group.prev('.separator').remove();
+                                    (in_more || group.prev().length===0) ? group.next('.separator').remove() : group.prev('.separator').remove(); // remove separator before empty group or after first empty group
                                     group.remove();
                                     if (in_more && $morepanel.children().filter('.group').length === 0) {
                                         btnsMore[tab.action] && btnsMore[tab.action].isActive() && btnsMore[tab.action].toggle(false);
