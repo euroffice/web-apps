@@ -298,7 +298,7 @@
     <script src="@@SRC_ROOT@@/apps/common/main/lib/util/desktopinit.js?__inline=true"></script>
     <script src="@@SRC_ROOT@@/apps/common/main/lib/util/themeinit.js?__inline=true"></script>
 </head>
-<body role="application">
+<body role="application" data-editor-type="pdf">
     <div class="inlined-svg"></div>
     <script src="@@SRC_ROOT@@/apps/common/main/lib/util/htmlutils.js?__inline=true"></script>
     <script src="@@SRC_ROOT@@/apps/common/main/lib/util/docserviceworker.js?__inline=true"></script>
