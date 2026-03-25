@@ -2,7 +2,7 @@
 
 ## web-apps
 
-The frontend for [Euro-Office Document Server][2] and [Euro-Office Desktop Editors](https://github.com/euro-office/DesktopEditors). Builds the program interface and allows the user create, edit, save and export text documents, spreadsheets, and presentations.
+The frontend for [Euro-Office Document Server][2] and [Euro-Office Desktop Editors](https://github.com/Euro-Office/DesktopEditors). Builds the program interface and allows the user create, edit, save and export text documents, spreadsheets, and presentations.
 
 ## Previous versions
 
@@ -10,17 +10,16 @@ Until 2019-10-23 the repository was called web-apps-pro.
 
 ## Project information
 
-Official website: [https://github.com/euro-office](https://github.com/euro-office "https://github.com/euro-office")
+Official website: [https://github.com/Euro-Office](https://github.com/Euro-Office "https://github.com/Euro-Office")
 
-Code repository: [https://github.com/euro-office/web-apps](https://github.com/euro-office/web-apps "https://github.com/euro-office/web-apps")
+Code repository: [https://github.com/Euro-Office/web-apps](https://github.com/Euro-Office/web-apps "https://github.com/Euro-Office/web-apps")
 
 ## User feedback and support
 
 If you have any problems with or questions about [Euro-Office Document Server][2], please visit our official forum: [github.com/euro-office][1] or you can ask and answer Euro-Office development questions on [Stack Overflow][3].
 
-  [1]: https://github.com/euro-office
-  [2]: https://github.com/euro-office/DocumentServer
-  [3]: http://stackoverflow.com/questions/tagged/euro-office
+  [1]: https://github.com/Euro-Office
+  [2]: https://github.com/Euro-Office/DocumentServer
 
 ## Styling
 
@@ -191,13 +190,13 @@ Contains brand values that replace `{{PLACEHOLDER}}` tokens in JS and webpack `D
 {
   "company_name": "Euro Office",
   "publisher_name": "Euro Office",
-  "publisher_url": "https://github.com/euro-office",
+  "publisher_url": "https://github.com/Euro-Office",
   "publisher_address": "",
   "publisher_phone": "",
   "sales_email": "",
   "support_email": "",
-  "support_url": "https://github.com/euro-office",
-  "help_url": "https://github.com/euro-office",
+  "support_url": "https://github.com/Euro-Office",
+  "help_url": "https://github.com/Euro-Office",
   "app_title": "Euro Office",
   "mobile_logo_light": "eo_logo_light.svg",
   "mobile_logo_dark": "eo_logo_dark.svg",
