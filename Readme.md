@@ -2,7 +2,7 @@
 
 ## web-apps
 
-The frontend for [ONLYOFFICE Document Server][2] and [ONLYOFFICE Desktop Editors](https://github.com/ONLYOFFICE/DesktopEditors). Builds the program interface and allows the user create, edit, save and export text documents, spreadsheets, and presentations.
+The frontend for [Euro-Office Document Server][2] and [Euro-Office Desktop Editors](https://github.com/Euro-Office/DesktopEditors). Builds the program interface and allows the user create, edit, save and export text documents, spreadsheets, and presentations.
 
 ## Previous versions
 
@@ -10,21 +10,20 @@ Until 2019-10-23 the repository was called web-apps-pro.
 
 ## Project information
 
-Official website: [https://www.onlyoffice.com/](https://www.onlyoffice.com "https://www.onlyoffice.com")
+Official website: [https://github.com/Euro-Office](https://github.com/Euro-Office "https://github.com/Euro-Office")
 
-Code repository: [https://github.com/ONLYOFFICE/web-apps](https://github.com/ONLYOFFICE/web-apps "https://github.com/ONLYOFFICE/web-apps")
+Code repository: [https://github.com/Euro-Office/web-apps](https://github.com/Euro-Office/web-apps "https://github.com/Euro-Office/web-apps")
 
 ## User feedback and support
 
-If you have any problems with or questions about [ONLYOFFICE Document Server][2], please visit our official forum: [forum.onlyoffice.com][1] or you can ask and answer ONLYOFFICE development questions on [Stack Overflow][3].
+If you have any problems with or questions about [Euro-Office Document Server][2], please visit our official forum: [github.com/euro-office][1] or you can ask and answer Euro-Office development questions on [Stack Overflow][3].
 
-  [1]: https://forum.onlyoffice.com
-  [2]: https://github.com/ONLYOFFICE/DocumentServer
-  [3]: http://stackoverflow.com/questions/tagged/onlyoffice
+  [1]: https://github.com/Euro-Office
+  [2]: https://github.com/Euro-Office/DocumentServer
 
 ## Styling
 
-Styling is accomplished via LESS, there is the content set by ONLYOFFICE. Before you do anything, please read the section under this about modifications.
+Styling is accomplished via LESS, there is the content set by Euro-Office. Before you do anything, please read the section under this about modifications.
 
 There are several hundred LESS files, organised in several folders:
 
@@ -187,14 +186,24 @@ theme/euro-office/
 
 Contains brand values that replace `{{PLACEHOLDER}}` tokens in JS and webpack `DefinePlugin` constants. Priority: environment variable > config.json > hardcoded default.
 
+> **Note:** Mobile and forms logo fields (`mobile_logo_*`, `forms_logo_*`) are in this file because the mobile editors use webpack, not Grunt. `build/theme.config.mjs` reads `config.json` directly to provide LESS `globalVars` (logo paths) and `DefinePlugin` constants (brand values) for the mobile webpack builds. This makes `config.json` the shared contract between the Grunt build (desktop) and the webpack build (mobile).
+
 ```json
 {
   "company_name": "Euro Office",
-  "app_title": "Euro Office",
   "publisher_name": "Euro Office",
-  "publisher_url": "https://euro-office.example.com",
+  "publisher_url": "https://github.com/Euro-Office",
+  "publisher_address": "",
+  "publisher_phone": "",
+  "sales_email": "",
+  "support_email": "",
+  "support_url": "https://github.com/Euro-Office",
+  "help_url": "https://github.com/Euro-Office",
+  "app_title": "Euro Office",
   "mobile_logo_light": "eo_logo_light.svg",
-  "mobile_logo_dark": "eo_logo_dark.svg"
+  "mobile_logo_dark": "eo_logo_dark.svg",
+  "forms_logo_light": "eo_logo_dark.svg",
+  "forms_logo_dark": "eo_logo_light.svg"
 }
 ```
 
