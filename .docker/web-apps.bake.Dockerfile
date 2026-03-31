@@ -37,4 +37,4 @@ FROM web-base AS web-apps
 
     ARG TARGETARCH
     RUN cd app/build && \
-        THEME=nextcloud grunt $(if [ "$TARGETARCH" = "arm64" ]; then echo "--skip-imagemin"; fi)
+        THEME=euro-office grunt $(if [ "$TARGETARCH" = "arm64" ]; then echo "--skip-imagemin"; fi)
