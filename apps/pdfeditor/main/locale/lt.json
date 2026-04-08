@@ -14,7 +14,7 @@
   "Common.Controllers.Plugins.helpUseMacros": "Makrokomandų mygtuką rasite čia",
   "Common.Controllers.Plugins.helpUseMacrosHeader": "Atnaujinta prieiga prie makrokomandų",
   "Common.Controllers.Plugins.textPluginsSuccessfullyInstalled": "Papildiniai sėkmingai įdiegti. Čia galite pasiekti visus foninius papildinius.",
-  "Common.Controllers.Plugins.textPluginSuccessfullyInstalled": "<b>{0</b> sėkmingai įdiegtas. Čia galite pasiekti visus foninius papildinius.",
+  "Common.Controllers.Plugins.textPluginSuccessfullyInstalled": "<b>{0}</b> sėkmingai įdiegtas. Čia galite pasiekti visus foninius papildinius.",
   "Common.Controllers.Plugins.textRunInstalledPlugins": "Paleisti įdiegtus papildinius",
   "Common.Controllers.Plugins.textRunPlugin": "Paleisti papildinį",
   "Common.Controllers.Shortcuts.txtDescriptionAddNewRow": "Pridėti naują eilutę lentelės apačioje.",
