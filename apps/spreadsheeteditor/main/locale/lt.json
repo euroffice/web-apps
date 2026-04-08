@@ -3087,8 +3087,7 @@
   "SSE.Views.DocumentHolder.txtInsert": "Įterpti",
   "SSE.Views.DocumentHolder.txtInsHyperlink": "Hipersaitas",
   "SSE.Views.DocumentHolder.txtInsImage": "Įterpti paveikslėlį iš failo",
-  "SSE.Views.Doc
-umentHolder.txtInsImageUrl": "Įterpti paveikslėlį iš URL",
+  "SSE.Views.DocumentHolder.txtInsImageUrl": "Įterpti paveikslėlį iš URL",
   "SSE.Views.DocumentHolder.txtLabelFilter": "Etiketės filtrai",
   "SSE.Views.DocumentHolder.txtMax": "Maksas",
   "SSE.Views.DocumentHolder.txtMin": "Min",
